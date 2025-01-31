@@ -22,14 +22,15 @@ function createNewWallet() {
     return walletDetails;
 }
 
-
 async function saveWalletToFile(walletDetails) {
     let wallets = [];
     try {
-        if (await fs.stat(WALLETS_PATH).catch(() => false)) {
-            const data = await fs.readFile(WALLETS_PATH, "utf8");
-            wallets = JSON.parse(data);
-        }
+        await fs.access(WALLETS_PATH).catch(async () => {
+            await fs.writeFile(WALLETS_PATH, "[]");
+        });
+
+        const data = await fs.readFile(WALLETS_PATH, "utf8");
+        wallets = JSON.parse(data);
     } catch (err) {
         log.error(`Error reading ${WALLETS_PATH}:`, err);
     }
@@ -81,7 +82,7 @@ async function autoRegister() {
     const maxRefCount = 50;
     const minPoints = 100000; // 50 hours uptime
     let proxy;
-    //const refCode = await askQuestion("Enter Your Referral code example => O8Ijyqih: ");
+
     for (let j = 0; j < wallets.length; j++) {
         const wallet = wallets[j]
         proxy = proxies[j % proxies.length] || null;
