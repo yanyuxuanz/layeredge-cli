@@ -4,7 +4,7 @@ import fs from 'fs/promises'
 import readline from 'readline'
 import log from './utils/logger.js'
 import LayerEdge from './utils/socket.js';
-import { readFile } from './utils/helper.js';
+import { readFiles } from './utils/helper.js';
 
 const WALLETS_PATH = 'walletsRef.json'
 
@@ -74,7 +74,7 @@ async function readWallets() {
     }
 }
 async function autoRegister() {
-    const proxies = await readFile('proxy.txt');
+    const proxies = await readFiles('proxy.txt');
     const wallets = await readWallets()
     if (proxies.length === 0) {
         log.warn('No proxies found, running without proxy...');
@@ -91,6 +91,7 @@ async function autoRegister() {
 
         const { refCode, nodePoints, referralCount } = await socket.checkNodePoints()
         log.info(`Found active ref code:`, refCode)
+        if (!refCode) continue;
         const isValid = await socket.checkInvite(refCode)
         if (!isValid) continue;
 
@@ -113,7 +114,7 @@ async function autoRegister() {
                 log.error('Error creating wallet:', error.message);
             }
         } else {
-            log.warn(`This ref code already reached max invite - current referral counts:`, referralCount)
+            log.warn(`This wallets points less than 100k or already reached max ref counts`)
         }
     }
 }

@@ -1,7 +1,7 @@
 
 import fs from 'fs/promises'
 import log from './utils/logger.js'
-import { readFile, delay } from './utils/helper.js'
+import { readFiles, delay } from './utils/helper.js'
 import banner from './utils/banner.js';
 import LayerEdge from './utils/socket.js';
 
@@ -27,7 +27,7 @@ async function run() {
     log.info(banner);
     await delay(3);
 
-    const proxies = await readFile('proxy.txt');
+    const proxies = await readFiles('proxy.txt');
     let wallets = await readWallets();
     if (proxies.length === 0) log.warn("No proxies found in proxy.txt - running without proxies");
     if (wallets.length === 0) {
