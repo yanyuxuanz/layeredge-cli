@@ -7,6 +7,7 @@ import LayerEdge from './utils/socket.js';
 
 const WALLETS_PATH = 'wallets.json'  // change to walletsRef.json if you want to running ref wallets
 
+
 // Function to read wallets 
 async function readWallets() {
     try {
