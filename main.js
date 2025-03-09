@@ -53,9 +53,17 @@ async function run() {
                     log.info(`Wallet ${address} is running - trying to claim node points...`);
                     await socket.stopNode();
                 }
+                logger.info(address, 'Submitting Proof', 'processing');
+                await socket.submitProof();
+
+                logger.info(address, 'Claiming Proof Submission Points', 'processing');
+                await socket.claimProofSubmissionPoints();
+
                 log.info(`Trying to reconnect node for Wallet: ${address}`);
                 await socket.connectNode();
-
+                
+                logger.progress(address, 'Claiming Light Node Points', 'processing');
+                await socket.claimLightNodePoints();
                 log.info(`Checking Node Points for Wallet: ${address}`);
                 await socket.checkNodePoints();
             } catch (error) {
