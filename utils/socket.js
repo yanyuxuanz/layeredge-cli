@@ -218,6 +218,126 @@ class LayerEdgeConnection {
             return { refCode: null, nodePoints: 0, referralCount: 0 };
         }
     }
+
+    
+    async submitProof() {
+        try {
+            const timestamp = new Date().toISOString();
+            const message = `I am submitting a proof for LayerEdge at ${timestamp}`;
+            const signature = await this.wallet.signMessage(message);
+            
+            const proofData = {
+                proof: "GmEdgesss",
+                signature: signature,
+                message: message,
+                address: this.wallet.address
+            };
+
+            const config = {
+                data: proofData,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': '*/*'
+                }
+            };
+
+            const response = await this.makeRequest(
+                "post",
+                "https://dashboard.layeredge.io/api/send-proof",
+                config
+            );
+
+            if (response && response.data && response.data.success) {
+                logger.success("Proof submitted successfully", response.data.message);
+                return true;
+            } else {
+                logger.error("Failed to submit proof", response?.data);
+                return false;
+            }
+        } catch (error) {
+            logger.error("Error submitting proof", "", error);
+            return false;
+        }
+    }
+
+    async claimProofSubmissionPoints() {
+        try {
+            const timestamp = Date.now();
+            const message = `I am claiming my proof submission node points for ${this.wallet.address} at ${timestamp}`;
+            const sign = await this.wallet.signMessage(message);
+
+            const claimData = {
+                walletAddress: this.wallet.address,
+                timestamp: timestamp,
+                sign: sign
+            };
+
+            const config = {
+                data: claimData,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json, text/plain, */*'
+                }
+            };
+
+            const response = await this.makeRequest(
+                "post",
+                "https://referralapi.layeredge.io/api/task/proof-submission",
+                config
+            );
+
+            if (response && response.data && response.data.message === "proof submission task completed successfully") {
+                logger.success("Proof submission points claimed successfully");
+                return true;
+            } else {
+                logger.error("Failed to claim proof submission points", response?.data);
+                return false;
+            }
+        } catch (error) {
+            logger.error("Error claiming proof submission points", "", error);
+            return false;
+        }
+    }
+
+    async claimLightNodePoints() {
+        try {
+            const timestamp = Date.now();
+            const message = `I am claiming my light node run task node points for ${this.wallet.address} at ${timestamp}`;
+            const sign = await this.wallet.signMessage(message);
+
+            const claimData = {
+                walletAddress: this.wallet.address,
+                timestamp: timestamp,
+                sign: sign
+            };
+
+            const config = {
+                data: claimData,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json, text/plain, */*'
+                }
+            };
+
+            const response = await this.makeRequest(
+                "post",
+                "https://referralapi.layeredge.io/api/task/node-points",
+                config
+            );
+
+            if (response && response.data && response.data.message === "node points task completed successfully") {
+                logger.success("Light node points claimed successfully");
+                return true;
+            } else {
+                logger.error("Failed to claim light node points", response?.data);
+                return false;
+            }
+        } catch (error) {
+            logger.error("Error claiming light node points", "", error);
+            return false;
+        }
+    }
+    
 }
 
 export default LayerEdgeConnection;
